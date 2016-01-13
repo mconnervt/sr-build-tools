@@ -3,20 +3,20 @@
 
 - name: Clean debian packages folders in case of the cached build
   shell: bash -c "rm -rf ./debian && rm -rf ./obj-x86_64-linux-gnu"
-    chdir={{repo_sources_path}}/{{item.path}}
+    chdir={{ros_workspace}}/{{item.path}}
   with_items: "{{workspace_packages_list|default([])}}"
   ignore_errors: True
 
 - name: Clean debian packages from repository directory
   shell: bash -c "find . -name '*.deb' -type f -delete"
-    chdir={{repo_sources_path}}
+    chdir={{ros_workspace}}
   ignore_errors: True
 
 - name: Add line to rosdep package cache
-  lineinfile: dest=/etc/ros/rosdep/sources.list.d/20-default.list line="yaml file://{{repo_sources_path}}/local_custom_rosdep.yaml"
+  lineinfile: dest=/etc/ros/rosdep/sources.list.d/20-default.list line="yaml file://{{ros_workspace}}/local_custom_rosdep.yaml"
 
 - name: Create empty file or clean existing one
-  shell: bash -c "cat /dev/null > {{repo_sources_path}}/local_custom_rosdep.yaml"
+  shell: bash -c "cat /dev/null > {{ros_workspace}}/local_custom_rosdep.yaml"
 
 - name: Append repository packages to rosdep ignore list
   shell: echo "{{item.name}}:{{' '}}{ubuntu:[]}" >> {{repo_sources_path}}/local_custom_rosdep.yaml
@@ -24,7 +24,7 @@
   when: complete_debian_packages_check
 
 - name: Append workspace packages to rosdep ignore list
-  shell: echo "{{item.name}}:{{' '}}{ubuntu:[]}" >> {{repo_sources_path}}/local_custom_rosdep.yaml
+  shell: echo "{{item.name}}:{{' '}}{ubuntu:[]}" >> {{ros_workspace}}/local_custom_rosdep.yaml
   with_items: "{{workspace_packages_list|default([])}}"
   when: not complete_debian_packages_check
 
@@ -33,7 +33,7 @@
 
 - name: Generate ROS debian package files
   shell: bash -c "source /opt/ros/{{ros_release}}/setup.bash && bloom-generate rosdebian --os-name ubuntu --os-version trusty --ros-distro {{ros_release}}"
-    chdir={{repo_sources_path}}/{{item.path}}
+    chdir={{ros_workspace}}/{{item.path}}
   with_items:
     - "{{workspace_packages_list|default([])}}"
 
@@ -41,7 +41,7 @@
 # mv command will fail in case if package is already installed for this case there is ignore_errors
 - name: Create and install debian packages recursively in order to fix local dependencies
   shell: bash -c "source /opt/ros/{{ros_release}}/setup.bash && fakeroot ./debian/rules binary && mv -vt .  ../*.deb && sudo dpkg --install *.deb"
-    chdir={{repo_sources_path}}/{{item[1].path}}
+    chdir={{ros_workspace}}/{{item[1].path}}
   ignore_errors: True
   with_nested:
     - "{{workspace_packages_list|default([])}}"
