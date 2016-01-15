@@ -1,4 +1,8 @@
 import jenkins.model.Jenkins
+import java.io.InputStream;
+import java.io.FileInputStream
+import java.io.File;
+import javax.xml.transform.stream.StreamSource
 
 
 def process_repository(repository_url) {
@@ -40,8 +44,13 @@ def process_repository(repository_url) {
 			repo_branch_job = Jenkins.instance.copy(template, repo_branch_job_prefix + template_job_name.replace("template_", ""))
 			repo_branch_job.description = "Job for " + repo_name + " branch " + it + " based on template " + template_job_name
 			repo_branch_job.disabled = false
-			repo_branch_job.scm = new hudson.plugins.git.GitSCM(repository_url)
+			repo_branch_job.scm.userRemoteConfigs[0].url = repository_url
 			repo_branch_job.scm.branches[0].name = "*/" + it
+			repo_branch_job.save()
+			
+			def job_xml_file = repo_branch_job.getConfigFile();
+			def file = job_xml_file.getFile();
+			repo_branch_job.updateByXml(new StreamSource(new FileInputStream(file)));
 			repo_branch_job.save()
 		}
 		else
