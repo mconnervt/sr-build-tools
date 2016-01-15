@@ -6,6 +6,7 @@ def process_repository(repository_url) {
 	def live_jobs_list = []
 
 	def job_name_prefix = "auto_"
+	def template_job_name = "sr_build_tools_template_job"
 
 	// TODO: add code to extract repo name from URL
 	def repo_name = "build-servers-check"
@@ -35,8 +36,12 @@ def process_repository(repository_url) {
 		def repo_branch_job = null
 		if (0 == repo_branch_jobs.size())
 		{
-			def template = Jenkins.instance.getItem("sr_build_tools_template_job")
-			repo_branch_job = Jenkins.instance.copy(template, repo_branch_job_prefix + "1")
+			def template = Jenkins.instance.getItem(template_job_name)
+			repo_branch_job = Jenkins.instance.copy(template, repo_branch_job_prefix + template_job_name.replace("template_", ""))
+			repo_branch_job.description = "Job for " + repo_name + " branch " + it + " based on template " + template_job_name
+			repo_branch_job.disabled = false
+			repo_branch_job.scm = new hudson.plugins.git.GitSCM(repository_url)
+			repo_branch_job.scm.branches[0].name = "*/" + it
 			repo_branch_job.save()
 		}
 		else
@@ -47,8 +52,6 @@ def process_repository(repository_url) {
 
 		// Debug only or separate option !!!
 		Jenkins.instance.getView("Job Manager").add(repo_branch_job)
-
-		repo_branch_job.dump()
 	}
 	
 	return live_jobs_list
