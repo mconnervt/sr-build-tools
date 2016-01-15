@@ -17,8 +17,6 @@ def process_repository(repository_url) {
 
 	def command_result = ("git ls-remote -h ${repository_url}").execute()
 	def repo_branches = command_result.text.readLines().collect {  it.replaceAll("[a-z0-9]*\\trefs\\/heads\\/", "") }
-	
-	println repo_branches
 
 	def repo_jobs_prefix = job_name_prefix + repo_name + "_"
 	chosen_jobs = Jenkins.instance.projects.findAll { it.name.startsWith(repo_jobs_prefix) }
@@ -47,7 +45,7 @@ def process_repository(repository_url) {
 			repo_branch_job.scm.userRemoteConfigs[0].url = repository_url
 			repo_branch_job.scm.branches[0].name = "*/" + it
 			repo_branch_job.save()
-			
+
 			def job_xml_file = repo_branch_job.getConfigFile();
 			def file = job_xml_file.getFile();
 			repo_branch_job.updateByXml(new StreamSource(new FileInputStream(file)));
@@ -62,7 +60,7 @@ def process_repository(repository_url) {
 		// Debug only or separate option !!!
 		Jenkins.instance.getView("Job Manager").add(repo_branch_job)
 	}
-	
+
 	return live_jobs_list
 }
 
