@@ -3,14 +3,27 @@ import java.io.InputStream;
 import java.io.FileInputStream
 import java.io.File;
 import javax.xml.transform.stream.StreamSource
+import hudson.plugins.git.browser.GithubWeb
 
+
+//def get_repository_branches(repository_url) {
+//
+//	def branches = [:]
+//	def hash_codes = [:]
+//	def command_result = ("git ls-remote ${repository_url}").execute()
+//	command_result.eachLine {
+//		entry = it.split()
+//		branches.
+//	}
+//
+//}
 
 def process_repository(repository_url) {
 
 	def live_jobs_list = []
 
 	def job_name_prefix = "auto_"
-	def template_job_name = "sr_build_tools_template_job"
+	def template_job_name = "template_unit_tests_and_code_coverage"
 
 	// TODO: add code to extract repo name from URL
 	def repo_name = "build-servers-check"
@@ -23,6 +36,7 @@ def process_repository(repository_url) {
 
 	repo_branches.each
 	{
+        def github_url = "https://github.com/shadow-robot/build-servers-check" + "/tree/" + java.net.URLEncoder.encode(it)
 		def repo_branch_job_prefix = repo_jobs_prefix + it + "_"
 		repo_branch_jobs = chosen_jobs.findAll { it.name.startsWith(repo_branch_job_prefix) }
 
@@ -35,16 +49,21 @@ def process_repository(repository_url) {
 			}
 		}
 
-		def repo_branch_job = null
+		def repo_branch_job
 		if (0 == repo_branch_jobs.size())
 		{
 			def template = Jenkins.instance.getItem(template_job_name)
 			repo_branch_job = Jenkins.instance.copy(template, repo_branch_job_prefix + template_job_name.replace("template_", ""))
 			repo_branch_job.description = "Job for " + repo_name + " branch " + it + " based on template " + template_job_name
 			repo_branch_job.disabled = false
+			def property = repo_branch_job.properties.find { it.key.getClass().getName().startsWith("com.coravy.hudson.plugins.github.GithubProjectProperty") }
+			property.value.projectUrl = github_url
+            repo_branch_job.scm.browser = new GithubWeb(github_url)
 			repo_branch_job.scm.userRemoteConfigs[0].url = repository_url
-			repo_branch_job.scm.branches[0].name = "*/" + it
-			repo_branch_job.save()
+			repo_branch_job.scm.branches[0].name = "**/" + it
+            def trigger = repo_branch_job.triggers.find { it.key.getClass().getName().startsWith("org.jenkinsci.plugins.ghprb.GhprbTrigger") }
+            trigger.value.whiteListTargetBranches[0].branch = it
+            repo_branch_job.save()
 
 			def job_xml_file = repo_branch_job.getConfigFile();
 			def file = job_xml_file.getFile();
