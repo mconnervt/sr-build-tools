@@ -6,63 +6,93 @@ import javax.xml.transform.stream.StreamSource
 import hudson.plugins.git.browser.GithubWeb
 
 
-//def get_repository_branches(repository_url) {
-//
-//	def branches = [:]
-//	def hash_codes = [:]
-//	def command_result = ("git ls-remote ${repository_url}").execute()
-//	command_result.eachLine {
-//		entry = it.split()
-//		branches.
-//	}
-//
-//}
+def get_repository_branches(repository_url) {
 
-def process_repository(repository_url) {
+    def result = [:]
+    def branches = [:]
+    def pull_requests = [:]
+    def head_uid = null
+
+    def branch_prefix = "refs/heads/"
+    def pull_request_prefix = "refs/pull/"
+
+    def command_result = ("git ls-remote ${repository_url}").execute()
+    command_result.text.readLines().each {
+        entry = it.split()
+        if (2 == entry.size()) {
+            key = entry[1]
+            value = entry[0]
+            if (key.equals("HEAD")) {
+                head_uid = value
+            }
+            else if (key.startsWith(branch_prefix)) {
+                branches[key.substring(branch_prefix.length())] = value
+            }
+            else if (key.startsWith(pull_request_prefix)) {
+                pull_requests[key.substring(pull_request_prefix.length())] = value
+            }
+        }
+    }
+
+    def head_branch_name_entry = branches.find { entry -> entry.value.equals(head_uid) }
+    if (null != head_branch_name_entry) {
+        result[head_branch_name_entry.key] = "HEAD"
+        pull_requests.each { key, value ->
+            def pull_request_branch = branches.find { entry -> entry.value.equals(value) }
+            if (null != pull_request_branch) {
+                def last_slash_index = key.lastIndexOf("/")
+                result[pull_request_branch.key] = key.substring(0, last_slash_index)
+            }
+        }
+    }
+
+    return result
+}
+
+def process_repository(repository_url, template_job_name) {
 
 	def live_jobs_list = []
 
 	def job_name_prefix = "auto_"
-	def template_job_name = "template_unit_tests_and_code_coverage"
 
 	// TODO: add code to extract repo name from URL
 	def repo_name = "build-servers-check"
-
-	def command_result = ("git ls-remote -h ${repository_url}").execute()
-	def repo_branches = command_result.text.readLines().collect {  it.replaceAll("[a-z0-9]*\\trefs\\/heads\\/", "") }
+	def repo_branches = get_repository_branches(repository_url)
 
 	def repo_jobs_prefix = job_name_prefix + repo_name + "_"
 	chosen_jobs = Jenkins.instance.projects.findAll { it.name.startsWith(repo_jobs_prefix) }
 
-	repo_branches.each
-	{
-        def github_url = "https://github.com/shadow-robot/build-servers-check" + "/tree/" + java.net.URLEncoder.encode(it)
-		def repo_branch_job_prefix = repo_jobs_prefix + it + "_"
-		repo_branch_jobs = chosen_jobs.findAll { it.name.startsWith(repo_branch_job_prefix) }
+	repo_branches.each { branch_name, type ->
 
-		if (repo_branch_jobs.size() > 1)
-		{
-			delete_count = repo_branch_jobs.size() - 1
-			delete_count.times
-			{
-				// TODO: Implement job duplication removal
-			}
-		}
+        if (null == type) return
 
-		def repo_branch_job
-		if (0 == repo_branch_jobs.size())
-		{
+        def github_url = "https://github.com/shadow-robot/build-servers-check" + "/tree/" +
+                java.net.URLEncoder.encode(branch_name)
+		def repo_branch_job_name = repo_jobs_prefix + branch_name + "_" + template_job_name.replace("template_", "")
+		def repo_branch_job = chosen_jobs.find { it.equals(repo_branch_job_name) }
+
+		if (null == repo_branch_job) {
 			def template = Jenkins.instance.getItem(template_job_name)
-			repo_branch_job = Jenkins.instance.copy(template, repo_branch_job_prefix + template_job_name.replace("template_", ""))
-			repo_branch_job.description = "Job for " + repo_name + " branch " + it + " based on template " + template_job_name
+			repo_branch_job = Jenkins.instance.copy(template, repo_branch_job_name)
+			repo_branch_job.description = "Job for " + repo_name + " branch " + branch_name + " based on template " +
+					template_job_name
 			repo_branch_job.disabled = false
-			def property = repo_branch_job.properties.find { it.key.getClass().getName().startsWith("com.coravy.hudson.plugins.github.GithubProjectProperty") }
+			def property = repo_branch_job.properties.find {
+				it.key.getClass().getName().startsWith("com.coravy.hudson.plugins.github.GithubProjectProperty") }
 			property.value.projectUrl = github_url
             repo_branch_job.scm.browser = new GithubWeb(github_url)
 			repo_branch_job.scm.userRemoteConfigs[0].url = repository_url
-			repo_branch_job.scm.branches[0].name = "**/" + it
-            def trigger = repo_branch_job.triggers.find { it.key.getClass().getName().startsWith("org.jenkinsci.plugins.ghprb.GhprbTrigger") }
-            trigger.value.whiteListTargetBranches[0].branch = it
+            if ("HEAD".equals(type)) {
+                repo_branch_job.scm.userRemoteConfigs[0].refspec = "+refs/pull/*:refs/remotes/origin/pr/*"
+            }
+            else {
+                repo_branch_job.scm.userRemoteConfigs[0].refspec =
+                        "+refs/pull/${type}/*:refs/remotes/origin/pr/${type}/*"
+            }
+			repo_branch_job.scm.branches[0].name = "**" // "**/" + branch_name
+            def trigger = repo_branch_job.triggers.find {
+				it.key.getClass().getName().startsWith("org.jenkinsci.plugins.ghprb.GhprbTrigger") }
+            trigger.value.whiteListTargetBranches[0].branch = branch_name
             repo_branch_job.save()
 
 			def job_xml_file = repo_branch_job.getConfigFile();
@@ -70,8 +100,7 @@ def process_repository(repository_url) {
 			repo_branch_job.updateByXml(new StreamSource(new FileInputStream(file)));
 			repo_branch_job.save()
 		}
-		else
-		{
+		else {
 			repo_branch_job = repo_branch_jobs[0]
 		}
 		live_jobs_list.push(repo_branch_job.name)
@@ -89,9 +118,8 @@ def repositories = [
 ]
 
 def jobs_to_leave = []
-repositories.each
-{
-	def live_jobs = process_repository(it)
+repositories.each {
+	def live_jobs = process_repository(it, "template_unit_tests_and_code_coverage")
 	jobs_to_leave.addAll(live_jobs)
 }
 
