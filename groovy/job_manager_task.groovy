@@ -82,17 +82,16 @@ def process_repository(repository_url, template_job_name) {
 			property.value.projectUrl = github_url
             repo_branch_job.scm.browser = new GithubWeb(github_url)
 			repo_branch_job.scm.userRemoteConfigs[0].url = repository_url
+            repo_branch_job.scm.userRemoteConfigs[0].refspec = "+refs/pull/*:refs/remotes/origin/pr/*"
             if ("HEAD".equals(type)) {
-                repo_branch_job.scm.userRemoteConfigs[0].refspec = "+refs/pull/*:refs/remotes/origin/pr/*"
+                repo_branch_job.scm.branches[0].name = "**/pr/*/merge"
             }
             else {
-                repo_branch_job.scm.userRemoteConfigs[0].refspec =
-                        "+refs/pull/${type}/*:refs/remotes/origin/pr/${type}/*"
+                repo_branch_job.scm.branches[0].name = "**/pr/${type}/head"
             }
-			repo_branch_job.scm.branches[0].name = "**" // "**/" + branch_name
             def trigger = repo_branch_job.triggers.find {
 				it.key.getClass().getName().startsWith("org.jenkinsci.plugins.ghprb.GhprbTrigger") }
-            trigger.value.whiteListTargetBranches[0].branch = branch_name
+            trigger.value.whiteListTargetBranches[0].branch = "indigo-devel"  // TODO: Check if this has any affect
             repo_branch_job.save()
 
 			def job_xml_file = repo_branch_job.getConfigFile();
