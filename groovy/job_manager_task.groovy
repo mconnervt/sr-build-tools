@@ -52,12 +52,23 @@ def get_repository_branches(repository_url) {
 def process_repository(repository_url, template_job_name) {
 
 	def live_jobs_list = []
-
 	def job_name_prefix = "auto_"
 
-	// TODO: add code to extract repo name from URL
-	def repo_name = "build-servers-check"
-	def repo_branches = get_repository_branches(repository_url)
+	def repo_name = null
+    def github_url = null
+    def repo_branches = get_repository_branches(repository_url)
+    if (repository_url.endsWith(".git")) {
+        github_url = repository_url.substring(0, repository_url.length() - ".git".length())
+        index_of_last_slash = github_url.lastIndexOf("/")
+        repo_name = github_url.substring(index_of_last_slash + 1)
+    }
+    else {
+        github_url = repository_url
+        def url_parts = repository_url.split("/")
+        repo_name = url_parts.reverse().find { (null != it)  && (it.lenght() > 0) }
+    }
+
+    print "repo name " + repo_name
 
 	def repo_jobs_prefix = job_name_prefix + repo_name + "_"
 	chosen_jobs = Jenkins.instance.projects.findAll { it.name.startsWith(repo_jobs_prefix) }
@@ -66,8 +77,6 @@ def process_repository(repository_url, template_job_name) {
 
         if (null == type) return
 
-        def github_url = "https://github.com/shadow-robot/build-servers-check" + "/tree/" +
-                java.net.URLEncoder.encode(branch_name)
 		def repo_branch_job_name = repo_jobs_prefix + branch_name + "_" + template_job_name.replace("template_", "")
 		def repo_branch_job = chosen_jobs.find { it.equals(repo_branch_job_name) }
 
@@ -89,9 +98,9 @@ def process_repository(repository_url, template_job_name) {
             else {
                 repo_branch_job.scm.branches[0].name = "**/pr/${type}/head"
             }
-            def trigger = repo_branch_job.triggers.find {
-				it.key.getClass().getName().startsWith("org.jenkinsci.plugins.ghprb.GhprbTrigger") }
-            trigger.value.whiteListTargetBranches[0].branch = "indigo-devel"  // TODO: Check if this has any affect
+//            def trigger = repo_branch_job.triggers.find {
+//				it.key.getClass().getName().startsWith("org.jenkinsci.plugins.ghprb.GhprbTrigger") }
+//            trigger.value.whiteListTargetBranches[0].branch = "indigo-devel"  // TODO: Check if this has any affect
             repo_branch_job.save()
 
 			def job_xml_file = repo_branch_job.getConfigFile();
