@@ -1,10 +1,16 @@
 import jenkins.model.Jenkins
-import java.io.InputStream;
 import java.io.FileInputStream
-import java.io.File;
 import javax.xml.transform.stream.StreamSource
 import hudson.plugins.git.browser.GithubWeb
 
+def repositories = [
+        "https://github.com/shadow-robot/build-servers-check.git",
+        "https://github.com/shadow-robot/sr_interface.git",
+        "https://github.com/shadow-robot/sr_core.git",
+        "https://github.com/shadow-robot/sr_common.git",
+        "https://github.com/shadow-robot/autopic.git",
+        "https://github.com/shadow-robot/fh_common.git"
+]
 
 def get_repository_branches(repository_url) {
 
@@ -16,7 +22,17 @@ def get_repository_branches(repository_url) {
     def branch_prefix = "refs/heads/"
     def pull_request_prefix = "refs/pull/"
 
-    def command_result = ("git ls-remote ${repository_url}").execute()
+    def credentials = com.cloudbees.plugins.credentials.CredentialsProvider.lookupCredentials(
+            com.cloudbees.plugins.credentials.common.UsernamePasswordCredentials.class,
+            Jenkins.instance, null, null)
+
+    def authenticated_url = repository_url
+    if (credentials.size() > 0) {
+        def authentication = credentials[0].username + ":" + credentials[0].password
+        authenticated_url = repository_url.replace("https://github.com", "https://${authentication}@github.com")
+    }
+
+    def command_result = ("git ls-remote ${authenticated_url}").execute()
     command_result.text.readLines().each {
         entry = it.split()
         if (2 == entry.size()) {
@@ -94,9 +110,6 @@ def process_repository(repository_url, template_job_name) {
             else {
                 repo_branch_job.scm.branches[0].name = "**/pr/${type}/head"
             }
-//            def trigger = repo_branch_job.triggers.find {
-//				it.key.getClass().getName().startsWith("org.jenkinsci.plugins.ghprb.GhprbTrigger") }
-//            trigger.value.whiteListTargetBranches[0].branch = "indigo-devel"  // TODO: Check if this has any affect
             repo_branch_job.save()
 
 			def job_xml_file = repo_branch_job.getConfigFile();
@@ -112,13 +125,6 @@ def process_repository(repository_url, template_job_name) {
 
 	return live_jobs_list
 }
-
-//def repositories = ["https://github.com/shadow-robot/fh_common.git"]
-def repositories = [
-	"https://github.com/shadow-robot/build-servers-check.git",
-    "https://github.com/shadow-robot/sr_interface.git",
-    "https://github.com/shadow-robot/sr_common.git"
-]
 
 def jobs_to_leave = []
 repositories.each {
