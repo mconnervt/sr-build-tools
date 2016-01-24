@@ -4,6 +4,14 @@ import javax.xml.transform.stream.StreamSource
 import hudson.plugins.git.browser.GithubWeb
 
 def repositories = [
+        "https://github.com/shadow-robot/sr-visualization.git",
+        "https://github.com/shadow-robot/sr_vision.git",
+        "https://github.com/shadow-robot/sr_tools.git",
+        "https://github.com/shadow-robot/sr_standalone.git",
+        "https://github.com/shadow-robot/sr-ros-interface.git",
+        "https://github.com/shadow-robot/sr-ros-interface-ethercat.git",
+        "https://github.com/shadow-robot/sr-ronex.git",
+        "https://github.com/shadow-robot/ramcip.git",
         "https://github.com/shadow-robot/build-servers-check.git",
         "https://github.com/shadow-robot/sr_interface.git",
         "https://github.com/shadow-robot/sr_core.git",
