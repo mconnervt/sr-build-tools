@@ -68,17 +68,13 @@ def process_repository(repository_url, template_job_name) {
         repo_name = url_parts.reverse().find { (null != it)  && (it.lenght() > 0) }
     }
 
-    print "repo name " + repo_name
-
-	def repo_jobs_prefix = job_name_prefix + repo_name + "_"
-	chosen_jobs = Jenkins.instance.projects.findAll { it.name.startsWith(repo_jobs_prefix) }
-
 	repo_branches.each { branch_name, type ->
 
         if (null == type) return
 
-		def repo_branch_job_name = repo_jobs_prefix + branch_name + "_" + template_job_name.replace("template_", "")
-		def repo_branch_job = chosen_jobs.find { it.equals(repo_branch_job_name) }
+		def repo_branch_job_name = job_name_prefix + repo_name + "_" + branch_name + "_" +
+                template_job_name.replace("template_", "")
+		def repo_branch_job = Jenkins.instance.projects.find { it.name.equals(repo_branch_job_name) }
 
 		if (null == repo_branch_job) {
 			def template = Jenkins.instance.getItem(template_job_name)
@@ -108,9 +104,6 @@ def process_repository(repository_url, template_job_name) {
 			repo_branch_job.updateByXml(new StreamSource(new FileInputStream(file)));
 			repo_branch_job.save()
 		}
-		else {
-			repo_branch_job = repo_branch_jobs[0]
-		}
 		live_jobs_list.push(repo_branch_job.name)
 
 		// Debug only or separate option !!!
@@ -122,7 +115,9 @@ def process_repository(repository_url, template_job_name) {
 
 //def repositories = ["https://github.com/shadow-robot/fh_common.git"]
 def repositories = [
-	"https://github.com/shadow-robot/build-servers-check.git"
+	"https://github.com/shadow-robot/build-servers-check.git",
+    "https://github.com/shadow-robot/sr_interface.git",
+    "https://github.com/shadow-robot/sr_common.git"
 ]
 
 def jobs_to_leave = []
