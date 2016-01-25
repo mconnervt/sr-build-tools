@@ -4,6 +4,7 @@ import javax.xml.transform.stream.StreamSource
 import hudson.plugins.git.browser.GithubWeb
 
 def repositories = [
+        "https://github.com/shadow-robot/sr-demo.git",
         "https://github.com/shadow-robot/sr-visualization.git",
         "https://github.com/shadow-robot/sr_vision.git",
         "https://github.com/shadow-robot/sr_tools.git",
