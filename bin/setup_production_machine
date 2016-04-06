@@ -10,7 +10,7 @@ fi
 
 if [ -n "$3" ];
   then
-    HTTP_PROXY="{{dict(http_proxy='$3', https_proxy: '$3')}}"
+    HTTP_PROXY="{{dict(http_proxy='$3',https_proxy='$3')}}"
   else
     HTTP_PROXY="{}"
 fi
