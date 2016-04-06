@@ -35,6 +35,10 @@ case $key in
     GITHUB_PASSWORD="$2"
     shift # past argument
     ;;
+    -x|--proxy)
+    HTTP_PROXY="$2"
+    shift # past argument
+    ;;
     --default)
     DEFAULT=YES
     ;;
@@ -76,6 +80,11 @@ else
     ROSINSTALL_PATH="../data/${ROSINSTALL_PATH}"
 fi
 
+# Setting proxy in YAML format
+if [ -n "${HTTP_PROXY}" ];
+then
+    HTTP_PROXY="{http_proxy: ${HTTP_PROXY}, https_proxy: ${HTTP_PROXY}}"
+fi
 
 echo "================================================================="
 echo "|       Installing Shadow Robot development environment "
@@ -145,7 +154,7 @@ echo " | Running Ansible |"
 echo " -------------------"
 echo ""
 
-ansible-playbook -vvv -K sr-build-tools/ansible/vagrant_site.yml --extra-vars "config_branch=${SR_CONFIG_BRANCH} ros_user=`whoami` ros_workspace=${WORKSPACE_PATH} ros_group=`whoami` ros_workspace_install=${ROSINSTALL_PATH} github_login=${GITHUB_LOGIN} github_password=${GITHUB_PASSWORD}"
+ansible-playbook -vvv -K sr-build-tools/ansible/vagrant_site.yml --extra-vars "config_branch=${SR_CONFIG_BRANCH} ros_user=`whoami` ros_workspace=${WORKSPACE_PATH} ros_group=`whoami` ros_workspace_install=${ROSINSTALL_PATH} github_login=${GITHUB_LOGIN} github_password=${GITHUB_PASSWORD} proxy_env=${HTTP_PROXY}"
 
 echo ""
 echo " ------------------------------------------------"

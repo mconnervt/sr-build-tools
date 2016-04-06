@@ -60,6 +60,7 @@
     ros_packages:
       - ethercat-grant
   sudo: yes
+  environment: "{{proxy_env}}"
   roles:
   - hand_prod
 
@@ -178,5 +179,6 @@
     ros_packages:
       - ethercat-grant
     ros_workspace_install: "../data/shadow_robot-{{ros_release}}.rosinstall"
+  environment: "{{proxy_env}}"
   roles:
   - dev_machine

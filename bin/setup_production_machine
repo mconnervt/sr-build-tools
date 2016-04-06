@@ -8,6 +8,11 @@ if [ -n "$2" ];
     echo "   (using sr-build-tools branch: ) $2"
 fi
 
+if [ -n "$3" ];
+  then
+    echo "   (using http proxy: ) $3"
+    HTTP_PROXY="{http_proxy: $3, https_proxy: $3}"
+fi
 
 echo ""
 echo " ---------------------------------"
@@ -55,7 +60,7 @@ echo " | Running Ansible |"
 echo " -------------------"
 echo ""
 
-ansible-playbook -v -K sr-build-tools/ansible/vagrant_site.yml --extra-vars "config_branch=$1"
+ansible-playbook -v -K sr-build-tools/ansible/vagrant_site.yml --extra-vars "config_branch=$1 proxy_env=${HTTP_PROXY}"
 
 
 
