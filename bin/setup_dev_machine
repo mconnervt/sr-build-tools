@@ -84,6 +84,8 @@ fi
 if [ -n "${HTTP_PROXY}" ];
 then
     HTTP_PROXY="{http_proxy: ${HTTP_PROXY}, https_proxy: ${HTTP_PROXY}}"
+else
+    HTTP_PROXY="{}"
 fi
 
 echo "================================================================="

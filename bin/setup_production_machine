@@ -12,6 +12,8 @@ if [ -n "$3" ];
   then
     echo "   (using http proxy: ) $3"
     HTTP_PROXY="{http_proxy: $3, https_proxy: $3}"
+  else
+    HTTP_PROXY="{}"
 fi
 
 echo ""
