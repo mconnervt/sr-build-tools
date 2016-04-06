@@ -100,7 +100,7 @@ echo "  * -c or --configbranch which branch of the sr-config should be pulled (i
 echo "  * -r or --rosinstall alternative rosinstall file found in the data folder of the sr-build-tools repository."
 echo "  * -l or --githublogin github login for private repositories."
 echo "  * -p or --githubpassword github password for private repositories."
-echo "  * -x or --proxy settings of the proxy server e.g. http://user:pass@proxy.example.com:8080 or  http://proxy.example.com:8080."
+echo "  * -x or --proxy settings of the proxy server e.g. http://user:pass@proxy.example.com:8080 or http://proxy.example.com:8080."
 echo ""
 echo "example: ./setup_dev_machine -w ~/myworkspace -c shadowrobot_1234 -l mygithublogin -p mysupersecretpassword"
 echo ""
