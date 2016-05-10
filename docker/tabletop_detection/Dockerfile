@@ -17,7 +17,7 @@ RUN mkdir /{code,data,results} && \
     cd .. && \
     rosdep install --from-paths src -i -y && \
     source /opt/ros/indigo/setup.bash && \
-    catkin init &&
+    catkin init 
 
 RUN source /opt/ros/indigo/setup.bash && \
     catkin build && \
