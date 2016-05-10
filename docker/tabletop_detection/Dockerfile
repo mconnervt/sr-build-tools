@@ -9,16 +9,17 @@ RUN mkdir /{code,data,results} && \
     apt-get update && \
     apt-get install -y python-wstool python-catkin-tools && \
     cd /code && \
-    mkdir ws && \
-    cd ws && \
-    wstool init src https://raw.github.com/wg-perception/object_recognition_core/master/doc/source/ork.rosinstall && \
-    cd src && \
+    mkdir -p ws/src && \
+    cd ws/src && \
+    wstool init . https://raw.github.com/wg-perception/object_recognition_core/master/doc/source/ork.rosinstall && \
     wstool update -j8 && \
-    cd .. && \
+    cd ecto_opencv && git checkout indigo && \
+    cd ../.. && \
     rosdep install --from-paths src -i -y && \
     source /opt/ros/indigo/setup.bash && \
     catkin init 
 
 RUN source /opt/ros/indigo/setup.bash && \
-    catkin build && \
+    cd /code/ws && \
+    TERM=xterm catkin build && \
     source devel/setup.bash
