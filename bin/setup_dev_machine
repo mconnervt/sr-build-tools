@@ -107,7 +107,7 @@ echo ""
 
 sudo apt-get update
 
-sudo apt-get install -y python-pip git libyaml-dev libpython2.7-dev &
+sudo apt-get install -y python-pip git libyaml-dev libpython2.7-dev python-crypto&
 rm -rf sr-build-tools &
 rm -rf ansible &
 wait
@@ -117,7 +117,7 @@ sudo apt-get install -y python-crypto
 # These are necessary dependencyes for the cryptography python package that is a dependency of paramiko (see http://www.paramiko.org/installing.html)
 sudo apt-get install -y build-essential libssl-dev libffi-dev python-dev
 sudo apt-get remove ansible -y &
-sudo pip install paramiko PyYAML Jinja2 httplib2 six &
+sudo pip install paramiko PyYAML Jinja2 httplib2 six
 git clone --branch 'v2.0.1.0-0.2.rc2' git://github.com/ansible/ansible.git --recursive &
 wait
 
