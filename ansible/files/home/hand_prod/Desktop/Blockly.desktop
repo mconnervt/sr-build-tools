@@ -1,0 +1,10 @@
+
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=false
+Icon[en_GB]=/usr/local/share/icons/shadowrobot/blockly.png
+Name[en_GB]=Robot Blockly
+Exec=xterm -hold -title "blockly" -e "bash -i -c 'roslaunch robot_blockly robot_blockly.launch'"
+Name=Robot Blockly
+Icon=/usr/local/share/icons/shadowrobot/blockly.png
