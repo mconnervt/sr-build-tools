@@ -32,3 +32,4 @@ aptly snapshot create shadow-private from repo shadow-private
 
 aptly publish snapshot -passphrase="${GPG_PASSWORD}" shadow-private
 aptly serve
+aptly api serve
