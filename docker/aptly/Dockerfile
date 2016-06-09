@@ -1,12 +1,14 @@
-FROM ubuntu:16.04
+FROM bryanhong/aptly
 
-ENV DEBIAN_FRONTEND noninteractive
+# creating the aptly repo
+RUN mkdir /debs
 
-# installing
-RUN apt-key adv --keyserver keys.gnupg.net --recv-keys 9E3E53F19C7DE460 && \
-    echo "deb http://repo.aptly.info/ squeeze main" > /etc/apt/sources.list.d/aptly.list && \
-    apt-get update && \
-    apt-get dist-upgrade && \
-    apt-get install -y aptly
+# may be install rundeck for automating
+# -> vpn or ssh key generation / add
+# -> add new deb files
+# -> snapshot aptly version
 
-# may be install rundeck for automating vpn key generation
+COPY entrypoint.sh /opt/
+
+ENTRYPOINT ["/opt/entrypoint.sh"]
+CMD ["bash"]
