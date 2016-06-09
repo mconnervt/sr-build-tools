@@ -1,6 +1,6 @@
 #!/bin/bash
 
-/opt/startup.sh &
+/opt/startup.sh
 
 aptly repo create -distribution=trusty -component=main shadow-private
 aptly repo add shadow-private /debs
