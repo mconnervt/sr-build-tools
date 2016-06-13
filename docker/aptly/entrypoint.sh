@@ -19,6 +19,8 @@ gpg --no-default-keyring \
 # Aptly looks in /root/.gnupg for default keyrings
 ln -sf /opt/aptly/aptly.sec /root/.gnupg/secring.gpg
 ln -sf /opt/aptly/aptly.pub /root/.gnupg/pubring.gpg
+# easy to download pub key
+ln -sf /opt/aptly/public/aptly.pub /root/.gnupg/pubring.gpg
 
 # Generate Nginx Config
 /opt/nginx.conf.sh
