@@ -3,4 +3,6 @@ set -e
 
 # setup ros environment
 source "/installed_workspace/setup.bash"
-roslaunch sr_robot_launch sr_right_ur10arm_hand.launch gui:=false
+/start_gzweb.sh &
+
+roslaunch sr_hand gazebo_arm_and_hand.launch gui:=false
