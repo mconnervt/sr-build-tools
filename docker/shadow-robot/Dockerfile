@@ -14,31 +14,17 @@ RUN sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu trusty main
     wget http://packages.osrfoundation.org/gazebo.key -O - |  apt-key add - && \
     apt-get update && \
     apt-get dist-upgrade -y && \
-    apt-get install -y ros-indigo-gazebo5-ros-pkgs ros-indigo-gazebo5-ros-control libjansson-dev npm nodejs libboost-dev imagemagick libtinyxml-dev mercurial cmake build-essential python-gts libgts-dev && \
-    wget https://raw.githubusercontent.com/osrf/osrf-rosdep/master/gazebo5/00-gazebo5.list -O /etc/ros/rosdep/sources.list.d/00-gazebo5.list && \
+    curl -sL https://deb.nodesource.com/setup_6.x | sudo bash - && \
+    apt-get install -y ros-indigo-gazebo7-ros-pkgs ros-indigo-gazebo7-ros-control libjansson-dev nodejs libboost-dev imagemagick libtinyxml-dev mercurial cmake build-essential python-gts libgts-dev && \
+    wget https://raw.githubusercontent.com/osrf/osrf-rosdep/master/gazebo7/00-gazebo7.list -O /etc/ros/rosdep/sources.list.d/00-gazebo7.list && \
     rosdep update && \
-    ln -s /usr/bin/nodejs /usr/bin/node && \
     mkdir /gzweb && \
     cd /gzweb && \
     hg clone https://bitbucket.org/osrf/gzweb && \
     cd gzweb && \
-    hg up gzweb_1.2.0 && \
+    hg up gzweb_2.0.0 && \
     source /opt/ros/indigo/setup.bash && \
     ./deploy.sh -m -c
-
-# Cleaning up, deleting all sources
-RUN curl -L bit.ly/dev-machine | bash -s -- -w /workspace/shadow_robot/base && \
-    cd /workspace/shadow_robot/base_deps && \
-    source /opt/ros/indigo/setup.bash && \
-    rospack profile && \
-    catkin_make -DCMAKE_INSTALL_PREFIX=/installed_workspace install && \
-    source /installed_workspace/setup.bash && \
-    rospack profile && \
-    cd ../base && \
-    rm -rf {build,devel} && \
-    catkin_make -DCMAKE_INSTALL_PREFIX=/installed_workspace && \
-    catkin_make -DCMAKE_INSTALL_PREFIX=/installed_workspace install && \
-    rm -rf  /workspace/shadow_robot
 
 # setup entrypoint
 COPY ./entrypoint.sh /
