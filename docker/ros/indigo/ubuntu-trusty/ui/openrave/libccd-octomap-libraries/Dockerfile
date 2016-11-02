@@ -4,6 +4,7 @@ MAINTAINER "Shadow Robot's Software Team <software@shadowrobot.com>"
 
 LABEL Description="ROS Indigo, libccd and octomap for Ubuntu Trusty" Vendor="Shadow Robot" Version="1.0"
 
+ENV DEBIAN_FRONTEND noninteractive
 ENV LIBS /root/libs
 
 RUN echo "Installing needed libraries" && \
