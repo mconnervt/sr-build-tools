@@ -8,7 +8,7 @@ ENV LIBS /root/libs
 
 RUN echo "Installing needed libraries" && \
     apt-get update && \
-    apt-get install \
+    apt-get install -y \
     cmake g++ git ipython octave \
     python-dev python-h5py python-numpy \
     python-pip python-scipy python-sympy \
@@ -18,7 +18,7 @@ RUN echo "Installing needed libraries" && \
     pip install --upgrade --user sympy==0.7.1 && \
 
     echo "Installing collada-dom-dev" && \
-    apt-get install collada-dom-dev && \
+    apt-get install -y collada-dom-dev && \
 
     echo "Compile code" && \
     mkdir -p $LIBS && \
