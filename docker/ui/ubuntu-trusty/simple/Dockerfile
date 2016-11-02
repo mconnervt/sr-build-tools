@@ -43,6 +43,6 @@ RUN echo "Installing packages" && \
 	usermod --shell /bin/bash $USERNAME && \
 	usermod -aG sudo $USERNAME && \
 	echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/$USERNAME && \
-	chmod 0440 /etc/sudoers.d/$USERNAME && \
+	chmod 0440 /etc/sudoers.d/$USERNAME
 
 USER dev
