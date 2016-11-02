@@ -8,17 +8,7 @@ ENV USERNAME dev
 ENV PULSE_SERVER /run/pulse/native
 ENV LIBS /root/libs
 
-RUN echo "Install and compile OpenSceneGraph" && \
-    cd $LIBS && \
-    git clone --depth 1 -b 'OpenSceneGraph-3.4' https://github.com/openscenegraph/OpenSceneGraph.git && \
-    cd ./OpenSceneGraph && \
-    mkdir build && \
-    cd build && \
-    cmake .. && \
-    make && \
-    make install && \
-
-    echo "Install and compile fcl" && \
+RUN echo "Install and compile fcl" && \
     cd $LIBS && \
     git clone --depth 1 -b '0.5.0' https://github.com/flexible-collision-library/fcl.git && \
     cd ./fcl && \

@@ -44,6 +44,16 @@ RUN echo "Installing needed libraries" && \
     make && \
     make install && \
 
+    echo "Install and compile OpenSceneGraph" && \
+    cd $LIBS && \
+    git clone --depth 1 -b 'OpenSceneGraph-3.4' https://github.com/openscenegraph/OpenSceneGraph.git && \
+    cd ./OpenSceneGraph && \
+    mkdir build && \
+    cd build && \
+    cmake .. && \
+    make && \
+    make install && \
+
     echo "Removing cache" && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
