@@ -1,0 +1,48 @@
+FROM ros:indigo
+
+MAINTAINER "Shadow Robot's Software Team <software@shadowrobot.com>"
+
+LABEL Description="Simple UI Docker image for Ubuntu Trusty" Vendor="Shadow Robot" Version="1.0"
+
+
+sudo apt-get install cmake g++ git ipython octave python-dev python-h5py python-numpy python-pip python-scipy python-sympy qt4-dev-tools zlib-bin
+
+pip install --upgrade --user sympy==0.7.1
+
+RUN apt-get install -y make cmake
+RUN apt-get install -y apt-utils
+RUN apt-get install -y python-numpy python-setuptools
+RUN easy_install pytz
+RUN pip install scipy
+
+# install dependencies
+RUN apt-get install -y libpcre++-dev libreadline-dev
+RUN apt-get install -y libqt4-dev qt4-dev-tools libxml2-dev libode-dev
+RUN apt-get install -y libsoqt4-dev libcoin60-dev
+RUN apt-get install -y libboost-all-dev
+RUN apt-get install -y libpcre3 libpcrecpp0
+
+latest pcre
+ADD ./src/pcre-8.35 /usr/local/src/pcre-8.35
+RUN cd /usr/local/src/pcre-8.35; \
+    ./configure; \
+    make; \
+    make install
+
+# collada-dom
+# ADD ./src/collada-dom-2.4.0 /usr/local/src/collada-dom-2.4.0
+# RUN cd /usr/local/src/collada-dom-2.4.0; \
+#     mkdir -p build; \
+#     cd build; \
+#     cmake ..; \
+#     make; \
+#     make install
+
+# OpenRAVE
+RUN git clone --branch master https://github.com/rdiankov/openrave.git /usr/local/src/openrave
+ADD ./src/sympy-0.7.5 /usr/local/src/openrave/sympy
+RUN cd /usr/local/src/openrave; \
+	mkdir build; \
+	cd build; \
+	cmake ..; \
+	make; \
