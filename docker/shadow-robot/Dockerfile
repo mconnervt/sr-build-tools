@@ -1,6 +1,6 @@
 FROM shadowrobot/kinetic:latest
 
-RUN curl -L https://raw.githubusercontent.com/shadow-robot/sr-build-tools/F_kinetic/bin/setup_dev_machine \
+RUN curl -L https://raw.githubusercontent.com/shadow-robot/sr-build-tools/F_indigo_to_kinetic/bin/setup_dev_machine \
     | bash -s -- -w /home/user/shadow_robot/base -b F_kinetic -c F_kinetic \
     -r shadow_robot-kinetic.rosinstall
 
