@@ -1,13 +1,8 @@
-FROM ros:indigo
+FROM shadowrobot/kinetic:latest
 
-# using bash instead of sh to be able to source
-RUN rm /bin/sh && ln -s /bin/bash /bin/sh
-
-ENV DEBIAN_FRONTEND noninteractive
-
-RUN apt-get update && \
-    apt-get install -y curl && \
-    curl -L bit.ly/dev-machine | bash -s -- -w /workspace/shadow_robot/base
+RUN curl -L https://raw.githubusercontent.com/shadow-robot/sr-build-tools/F_kinetic/bin/setup_dev_machine \
+    | bash -s -- -w /home/user/shadow_robot/base -b F_kinetic -c F_kinetic \
+    -r shadow_robot-kinetic.rosinstall
 
 # Cleaning up, deleting all sources
 RUN cd /workspace/shadow_robot/base_deps && \
