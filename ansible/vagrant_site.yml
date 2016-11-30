@@ -175,8 +175,8 @@
 - hosts: dev-machine
   vars:
     ros_release: 'kinetic'
-    ros_packages:
-      - ethercat-grant
+#    ros_packages:
+#      - ethercat-grant
     ros_workspace_install: "../data/shadow_robot-{{ros_release}}.rosinstall"
   roles:
   - dev_machine
