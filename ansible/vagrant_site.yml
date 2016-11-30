@@ -174,7 +174,7 @@
 
 - hosts: dev-machine
   vars:
-    ros_release: 'kinetic'
+    ros_release: 'indigo'
 #    ros_packages:
 #      - ethercat-grant
     ros_workspace_install: "../data/shadow_robot-{{ros_release}}.rosinstall"
