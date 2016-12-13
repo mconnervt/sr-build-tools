@@ -12,7 +12,7 @@ LABEL Description="This image is used to make ROS Indigo based projects build fa
 
 ENV DEBIAN_FRONTEND noninteractive
 
-ENV toolset_branch="master"
+ENV toolset_branch="F_kinetic_ci_temp_test"
 ENV server_type="docker_hub"
 ENV used_modules="check_cache,create_workspace"
 ENV remote_shell_script="https://raw.githubusercontent.com/shadow-robot/sr-build-tools/$toolset_branch/bin/sr-run-ci-build.sh"
