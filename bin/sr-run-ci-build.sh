@@ -35,7 +35,7 @@ if  [ "circle" != $server_type ] && [ "semaphore_docker" != $server_type ] && [ 
   fi
 fi
 
-export extra_variables="codecov_secure=$CODECOV_TOKEN github_login=$GITHUB_LOGIN github_password=$GITHUB_PASSWORD "
+export extra_variables="codecov_secure=$CODECOV_TOKEN github_login=$GITHUB_LOGIN github_password=$GITHUB_PASSWORD ros_release=$ros_release"
 
 case $server_type in
 
