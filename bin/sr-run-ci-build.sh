@@ -6,7 +6,7 @@ set -e # fail on errors
 export toolset_branch=$1
 export server_type=$2
 export tags_list=$3
-export ros_release=${4:-"indigo"}
+export ros_release=${5:-"indigo"}
 
 export docker_image=${docker_image_name:-"shadowrobot/ubuntu-ros-${ros_release}-build-tools"}
 
