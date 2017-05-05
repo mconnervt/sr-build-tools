@@ -7,7 +7,7 @@ export github_user=${4:-github_user_not_provided}
 export github_password=${5:-github_password_not_provided}
 
 export current_folder=$initial_folder
-cd $destination_folder
+cd $initial_folder
 
 wstool init .
 
@@ -30,6 +30,7 @@ while [ $current_repo_count -ne $previous_repo_count ]; do
     break
   fi
   export current_folder=$destination_folder
+  cd $destination_folder
 
 done
 
