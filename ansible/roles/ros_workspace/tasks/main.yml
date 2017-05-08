@@ -24,7 +24,7 @@
 # Do an initial make of the empty workspace to get a setup.bash.
 # If there is one already don't do this, so we don't trigger a big make
 - name: catkin make workspace deps
-  shell: bash -c "source /opt/ros/{{ros_release}}/setup.bash && catkin_make -DC_BUILD_TYPE=Release"
+  shell: bash -c "source /opt/ros/{{ros_release}}/setup.bash && catkin_make -DCMAKE_BUILD_TYPE=Release"
     chdir={{ros_workspace}}_deps
     creates={{ros_workspace}}_deps/devel/setup.bash
   sudo: yes
@@ -45,7 +45,7 @@
 # Do an initial make of the empty workspace to get a setup.bash.
 # If there is one already don't do this, so we don't trigger a big make
 - name: catkin make workspace
-  shell: bash -c "source {{ros_workspace}}_deps/devel/setup.bash && catkin_make -DC_BUILD_TYPE=Release"
+  shell: bash -c "source {{ros_workspace}}_deps/devel/setup.bash && catkin_make -DCMAKE_BUILD_TYPE=Release"
     chdir={{ros_workspace}}
     creates={{ros_workspace}}/devel/setup.bash
   sudo: yes
@@ -108,7 +108,7 @@
 
 # Now build the code we just installed.
 - name: catkin_make for deps
-  shell: bash -c "source <(grep '^export\|^source' ~{{ros_user}}/.bashrc) && catkin_make -DC_BUILD_TYPE=Release"
+  shell: bash -c "source <(grep '^export\|^source' ~{{ros_user}}/.bashrc) && catkin_make -DCMAKE_BUILD_TYPE=Release"
     chdir={{ros_workspace}}_deps
   sudo: yes
   sudo_user: "{{ros_user}}"
@@ -123,14 +123,14 @@
 
 # Now build the code we just installed.
 - name: catkin_make
-  shell: bash -c "source <(grep '^export\|^source' ~{{ros_user}}/.bashrc) && catkin_make -DC_BUILD_TYPE=Release"
+  shell: bash -c "source <(grep '^export\|^source' ~{{ros_user}}/.bashrc) && catkin_make -DCMAKE_BUILD_TYPE=Release"
     chdir={{ros_workspace}}
   sudo: yes
   sudo_user: "{{ros_user}}"
 
 - name: Add ws_update alias for updating the workspace to ~/.bashrc
   lineinfile: dest=~{{ros_user}}/.bashrc
-              line="alias ws_update='current_dir=$PWD && roscd && cd ../src &&  wstool foreach --git \"git pull\" && cd .. && catkin_make -DC_BUILD_TYPE=Release && cd $current_dir'"
+              line="alias ws_update='current_dir=$PWD && roscd && cd ../src &&  wstool foreach --git \"git pull\" && cd .. && catkin_make -DCMAKE_BUILD_TYPE=Release && cd $current_dir'"
               regexp='^alias ws_update.*'
               insertafter=EOF
               backup=yes
