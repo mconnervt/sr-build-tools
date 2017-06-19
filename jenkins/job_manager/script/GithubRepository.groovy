@@ -118,7 +118,7 @@ class GithubRepository extends Repository {
     def fetchBranches(retries = 5) {
         for (attempt in 1..retries) {
             if (attempt > 1) logger.info("Trying to fetch branches ${retries + 1 - attempt} more time(s).")
-            def apiResponse = apiQuery("branches", [per_page: '100'], credentials.token)
+            def apiResponse = apiQuery("branches", [per_page: '200'], credentials.token)
             if (!apiResponse || (apiResponse instanceof Integer)) {
                 logger.warn("Failed to fetch any branches for ${url}")
             } else {
@@ -144,7 +144,7 @@ class GithubRepository extends Repository {
     def fetchPullRequests(retries = 5) {
         for (attempt in 1..retries) {
             if (attempt > 1) logger.info("Trying to fetch pull requests ${retries + 1 - attempt} more time(s).")
-            def apiResponse = apiQuery("pulls", [per_page: '100', state: 'open'], credentials.token)
+            def apiResponse = apiQuery("pulls", [per_page: '200', state: 'open'], credentials.token)
             if (apiResponse instanceof Integer) {
                 logger.warn("Failed to fetch pull requests for ${url}")
             } else {
