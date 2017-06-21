@@ -10,3 +10,7 @@
     local-name: pysdf
     uri: https://github.com/andreasBihlmaier/pysdf.git
     version: master
+- git:
+    local-name: common_resources
+    uri: https://github.com/shadow-robot/common_resources.git
+    version: kinetic-devel
