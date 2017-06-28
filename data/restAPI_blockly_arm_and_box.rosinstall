@@ -1,7 +1,7 @@
 - git:
     local-name: sr_vision
     uri: https://github.com/shadow-robot/sr_vision.git
-    version: F_segmentation_removed_tmp
+    version: kinetic-devel
 - git:
     local-name: gazebo2rviz
     uri: https://github.com/shadow-robot/gazebo2rviz.git
