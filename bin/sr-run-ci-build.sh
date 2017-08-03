@@ -41,19 +41,22 @@ if  [ "circle" != $server_type ] && [ "semaphore_docker" != $server_type ] && [ 
   fi
 fi
 
-export extra_variables="codecov_secure=$CODECOV_TOKEN github_login=$GITHUB_LOGIN github_password=$GITHUB_PASSWORD ros_release=$ros_release ubuntu_version_name=$ubuntu_version "
+export extra_variables="codecov_secure=$CODECOV_TOKEN github_login=$GITHUB_LOGIN github_password=$GITHUB_PASSWORD ros_release=$ros_release ubuntu_version_name=$ubuntu_version" "
 
 case $server_type in
 
 "travis") echo "Travis CI server"
   sudo docker pull $docker_image
   export extra_variables="$extra_variables travis_repo_dir=/host$TRAVIS_BUILD_DIR  travis_is_pull_request=$TRAVIS_PULL_REQUEST"
-  sudo docker run -w "$docker_user_home/sr-build-tools/ansible" -v $TRAVIS_BUILD_DIR:/host$TRAVIS_BUILD_DIR $docker_image  bash -c "git pull && git checkout $toolset_branch && sudo PYTHONUNBUFFERED=1 ansible-playbook -v -i \"localhost,\" -c local docker_site.yml --tags \"travis,$tags_list\" -e \"$extra_variables\" "
+  sudo docker run -w "$docker_user_home/sr-build-tools/ansible" -v $TRAVIS_BUILD_DIR:/host$TRAVIS_BUILD_DIR $docker_image  bash -c "git pull && git checkout $toolset_branch && sudo PYTHONUNBUFFERED=1 ansible-playbook -v -i \"localhost,\" -c local docker_site.yml --tags \"travis,$tags_list\" -e \"$extra_variables\"
   ;;
 
 "shippable") echo "Shippable server"
   export extra_variables="$extra_variables shippable_repo_dir=$SHIPPABLE_BUILD_DIR  shippable_is_pull_request=$PULL_REQUEST"
-  sudo PYTHONUNBUFFERED=1 ansible-playbook -v -i "localhost," -c local docker_site.yml --tags "shippable,$tags_list" -e "$extra_variables"
+  # export V4R_DIR="/home/user/v4r/build"
+  env
+  sudo env
+  sudo V4R_DIR="/home/user/v4r/build" PYTHONUNBUFFERED=1 ansible-playbook -v -i "localhost," -c local docker_site.yml --tags "shippable,$tags_list" -e "$extra_variables"
   ;;
 
 "semaphore") echo "Semaphore server"
