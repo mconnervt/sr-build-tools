@@ -42,7 +42,7 @@ RUN set -x && \
     gosu $MY_USERNAME /tmp/oneliner "$toolset_branch" $server_type $used_modules && \
 
     echo "Installing additional ROS navigation packages" && \
-    apt-get install -y ros-kinetic-costmap-2d ros-kinetic-nav-core ros-kinetic-move-base ros-kinetic-map-server
+    apt-get install -y ros-kinetic-costmap-2d ros-kinetic-nav-core ros-kinetic-move-base ros-kinetic-map-server && \
 
     echo "Updating bash commands" && \
     wget -O /tmp/additional_bashrc_cmds "$( echo "$remote_additional_bashrc_cmds" | sed 's/#/%23/g' )" && \
